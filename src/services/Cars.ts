@@ -25,4 +25,18 @@ export default class CarsService implements IService<ICar> {
     if (!car) throw new Error(ErrorTypes.EntityNotFound);
     return car;
   }
+
+  public async update(_id: string, obj: unknown): Promise<ICar> {
+    const parsed = carZodSchema.safeParse(obj);
+    if (!parsed.success) throw parsed.error;
+    const updated = await this._car.update(_id, parsed.data);
+    if (!updated) throw new Error(ErrorTypes.EntityNotFound);
+    return updated;
+  }
+
+  public async delete(_id: string): Promise<ICar> {
+    const deleted = await this._car.delete(_id);
+    if (!deleted) throw new Error(ErrorTypes.EntityNotFound);
+    return deleted;
+  }
 }
