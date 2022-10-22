@@ -4,7 +4,7 @@ import { ZodError } from 'zod';
 import { ErrorTypes } from '../../../errors/catalog';
 import CarsModel from '../../../models/Cars';
 import CarsService from '../../../services/Cars';
-import { mockNewCar, mockSendNewCar } from '../../mocks/carsMock';
+import { mockNewCar, mockSendNewCar, mockUpdateCar, mockSendUpdateCar } from '../../mocks/carsMock';
 import { any } from 'joi';
 const { expect } = chai;
 
@@ -17,6 +17,7 @@ describe('Car Service', () => {
     sinon.stub(carsModel, 'read').resolves([mockNewCar]);
     // onCall para chamar o método readOne retornando resultados diferentes em cada chamada
     sinon.stub(carsModel, 'readOne').onCall(0).resolves(mockNewCar).onCall(1).resolves(null);
+    sinon.stub(carsModel, 'update').resolves(mockUpdateCar)
   });
 
   after(()=>{
@@ -62,6 +63,15 @@ describe('Car Service', () => {
           error = err;
         }
         expect(error.message).to.be.deep.equal(ErrorTypes.EntityNotFound);
+      });
+    });
+  });
+
+  describe('Atualiza um registro no banco de dados', () => {
+    describe('Em casos de sucesso', () => {
+      it('Atualiza o carro do id informado com o corpo enviado no body', async () => {
+        const update = await carsService.update(mockUpdateCar._id, mockSendUpdateCar);
+        expect(update).to.be.deep.equal(mockUpdateCar);
       });
     });
   });
