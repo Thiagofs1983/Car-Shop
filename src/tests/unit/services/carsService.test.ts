@@ -12,6 +12,7 @@ describe('Car Service', () => {
 
   before(async () => {
     sinon.stub(carsModel, 'create').resolves(mockNewCar);
+    sinon.stub(carsModel, 'read').resolves([mockNewCar]);
   });
 
   after(()=>{
@@ -31,6 +32,13 @@ describe('Car Service', () => {
         error = err;
       }
       expect(error).to.be.instanceOf(ZodError);
+    });
+  });
+
+  describe('Busca carros cadastrados no BD', () => {
+    it('A busca retorna um array com os carros ou um array vazio', async () => {
+      const get = await carsService.read();
+      expect(get).to.be.deep.equal([mockNewCar])
     });
   });
 });
