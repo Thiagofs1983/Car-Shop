@@ -1,9 +1,11 @@
 import * as sinon from 'sinon';
 import chai from 'chai';
+import { ZodError } from 'zod';
+import { ErrorTypes } from '../../../errors/catalog';
 import CarsModel from '../../../models/Cars';
 import CarsService from '../../../services/Cars';
 import { mockNewCar, mockSendNewCar } from '../../mocks/carsMock';
-import { ZodError } from 'zod';
+import { any } from 'joi';
 const { expect } = chai;
 
 describe('Car Service', () => {
@@ -13,7 +15,8 @@ describe('Car Service', () => {
   before(async () => {
     sinon.stub(carsModel, 'create').resolves(mockNewCar);
     sinon.stub(carsModel, 'read').resolves([mockNewCar]);
-    sinon.stub(carsModel, 'readOne').resolves(mockNewCar);
+    // onCall para chamar o método readOne retornando resultados diferentes em cada chamada
+    sinon.stub(carsModel, 'readOne').onCall(0).resolves(mockNewCar).onCall(1).resolves(null);
   });
 
   after(()=>{
@@ -45,9 +48,21 @@ describe('Car Service', () => {
     });
     describe('Busca um carro específico pelo seu id', () => {
       it('Caso de sucesso na busca', async () => {
+        // onCall(0)
         const getCar = await carsService.readOne(mockNewCar._id)
         expect(getCar).to.be.deep.equal(mockNewCar);
-      })
+      });
+      it('Caso o id informado não esteja cadastrado no BD retorna uma mensagem de erro', async () => {
+        let error;
+
+        try {
+          //onCall(1)
+          await carsService.readOne(mockNewCar._id);
+        } catch(err: any) {
+          error = err;
+        }
+        expect(error.message).to.be.deep.equal(ErrorTypes.EntityNotFound);
+      });
     });
   });
 });
