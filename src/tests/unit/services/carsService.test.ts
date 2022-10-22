@@ -13,6 +13,7 @@ describe('Car Service', () => {
   before(async () => {
     sinon.stub(carsModel, 'create').resolves(mockNewCar);
     sinon.stub(carsModel, 'read').resolves([mockNewCar]);
+    sinon.stub(carsModel, 'readOne').resolves(mockNewCar);
   });
 
   after(()=>{
@@ -36,9 +37,17 @@ describe('Car Service', () => {
   });
 
   describe('Busca carros cadastrados no BD', () => {
-    it('A busca retorna um array com os carros ou um array vazio', async () => {
-      const get = await carsService.read();
-      expect(get).to.be.deep.equal([mockNewCar])
+    describe('Busca todos os carros cadastrados', () => {
+      it('A busca retorna um array com os carros ou um array vazio', async () => {
+        const get = await carsService.read();
+        expect(get).to.be.deep.equal([mockNewCar])
+      });
+    });
+    describe('Busca um carro específico pelo seu id', () => {
+      it('Caso de sucesso na busca', async () => {
+        const getCar = await carsService.readOne(mockNewCar._id)
+        expect(getCar).to.be.deep.equal(mockNewCar);
+      })
     });
   });
 });
