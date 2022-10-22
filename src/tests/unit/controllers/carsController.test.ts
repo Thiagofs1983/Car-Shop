@@ -40,4 +40,32 @@ describe('Cars Controller', () => {
       expect(jsonStub.calledWith(mockNewCar)).to.be.true;
     });
   });
+
+  describe('Busca os carros cadastrados no BD', () => {
+    beforeEach(() => {
+      sinon.stub(carsService, 'read').resolves([mockNewCar]);
+      sinon.stub(carsService, 'readOne').resolves(mockNewCar);
+    });
+
+    describe('Lista todos os carros cadastrados no BD', () => {
+      it('Lista todos os carros cadastrados no BD', async () => {
+        await carsController.read(req, res);
+  
+        const statusStub = res.status as sinon.SinonStub;
+        expect(statusStub.calledWith(200)).to.be.true;
+  
+        const jsonStub = res.json as sinon.SinonStub;
+        expect(jsonStub.calledWith([mockNewCar])).to.be.true;
+      });
+    });
+    describe('Busca carro cadastrado pelo id', () => {
+      it('Retorna carro pelo id específico', async () => {
+        req.params = { id: mockNewCar._id }
+        await carsController.readOne(req, res);
+
+        expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
+        expect((res.json as sinon.SinonStub).calledWith(mockNewCar)).to.be.true;
+      });
+    });
+  });
 });
