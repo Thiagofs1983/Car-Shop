@@ -9,4 +9,9 @@ export default class MotorcycleController {
     const created = await this._service.create(req.body);
     res.status(201).json(created);
   }
+
+  public async read(req: Request, res: Response<IMotorcycle[]>) {
+    const readAll = await this._service.read(); 
+    res.status(200).json(readAll);
+  }
 }
