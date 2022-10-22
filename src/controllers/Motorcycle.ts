@@ -19,4 +19,10 @@ export default class MotorcycleController {
     const readById = await this._service.readOne(req.params.id);
     res.status(200).json(readById);
   }
+
+  public async update(req: Request, res: Response<IMotorcycle>) {
+    const request = req.body;
+    const updated = await this._service.update(req.params.id, request);
+    res.status(200).json(updated);
+  }
 }
