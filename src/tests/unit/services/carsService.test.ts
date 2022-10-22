@@ -17,7 +17,8 @@ describe('Car Service', () => {
     sinon.stub(carsModel, 'read').resolves([mockNewCar]);
     // onCall para chamar o método readOne retornando resultados diferentes em cada chamada
     sinon.stub(carsModel, 'readOne').onCall(0).resolves(mockNewCar).onCall(1).resolves(null);
-    sinon.stub(carsModel, 'update').resolves(mockUpdateCar)
+    sinon.stub(carsModel, 'update').onCall(0).resolves(mockUpdateCar).onCall(1).resolves(null);
+    sinon.stub(carsModel, 'delete').onCall(0).resolves(mockNewCar).onCall(1).resolves(null);
   });
 
   after(()=>{
@@ -73,6 +74,48 @@ describe('Car Service', () => {
         const update = await carsService.update(mockUpdateCar._id, mockSendUpdateCar);
         expect(update).to.be.deep.equal(mockUpdateCar);
       });
+      it('Caso o id informado não esteja cadastrado no BD retorna uma mensagem de erro', async () => {
+        let error;
+
+        try {
+          //onCall(1)
+          await carsService.update(mockNewCar._id, mockSendUpdateCar);
+        } catch(err: any) {
+          error = err;
+        }
+        expect(error.message).to.be.deep.equal(ErrorTypes.EntityNotFound);
+      });
+      it('Caso os dados não sejam enviados corretamente gera um ERRO', async () => {
+        let error;
+        try {
+          await carsService.update(mockUpdateCar._id, {});
+        } catch(err) {
+          error = err;
+        }
+        expect(error).to.be.instanceOf(ZodError);
+      });
     });
+  });
+
+  describe('Apaga um registro no banco de dados', () => {
+    describe('Em caso de sucesso', () => {
+      it('Apaga o carro do id informado', async () => {
+        const deleted = await carsService.delete(mockNewCar._id);
+        expect(deleted).to.be.deep.equal(mockNewCar);
+      });
+    });
+    describe('Caso que NÃO haja sucesso', () => {
+      it('Caso o id informado não esteja cadastrado no BD retorna uma mensagem de erro', async () => {
+        let error;
+
+        try {
+          //onCall(1)
+          await carsService.delete(mockNewCar._id);
+        } catch(err: any) {
+          error = err;
+        }
+        expect(error.message).to.be.deep.equal(ErrorTypes.EntityNotFound);
+      });
+    })
   });
 });
