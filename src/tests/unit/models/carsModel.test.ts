@@ -11,7 +11,8 @@ describe('Cars Model', () => {
   const carsModel = new CarsModel();
   before(async () => {
     sinon.stub(Model, 'create').resolves(mockNewCar);
-    sinon.stub(Model, 'find').resolves([]);
+    sinon.stub(Model, 'find').resolves([mockNewCar]);
+    sinon.stub(Model, 'findOne').resolves(mockNewCar);
   });
 
   after(()=>{
@@ -28,8 +29,12 @@ describe('Cars Model', () => {
   describe('Busca carros cadastrados no BD', () => {
     it('Busca todos os carros', async () => {
       const cars = await carsModel.read();
-      expect(cars).to.be.deep.equal([]);
+      expect(cars).to.be.deep.equal([mockNewCar]);
     });
+    it('Busca um carro específico pelo id informado', async () => {
+      const car = await carsModel.readOne(mockNewCar._id);
+      expect(car).to.be.deep.equal(mockNewCar);
+    })
   });
 
 });
