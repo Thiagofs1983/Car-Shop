@@ -6,7 +6,7 @@
 ## Técnologias usadas
 
 Back-end:
-> Desenvolvido usando: Node, MongoDB, Express, Typescrypt, Mongoose, Zod
+> Desenvolvido usando: Node, MongoDB, Express, Typescrypt, Mongoose, Zod, Mocha, Chai
 
 
 ## Instalando Dependências
